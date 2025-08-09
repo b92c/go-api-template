@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  localstack:
+    image: localstack/localstack:3.1
+    ports:
+      - "127.0.0.1:4510-4559:4510-4559"  # external service port range
+      - "127.0.0.1:4566:4566"            # LocalStack Edge Proxy
+    environment:
+      - DEBUG=${DEBUG:-0}
+      - SERVICES=lambda,apigateway,s3,sns,sqs,dynamodb,kinesis,kms,ses
+      - DISABLE_CORS_CHECKS=1
+      - DISABLE_CORS_HANDLERS=1
+      - SKIP_CORS_PREFLIGHT=1
+      - CORS_ALLOW_ORIGIN=*
+      - CORS_EXPOSE_HEADERS=*
+      - EXTRA_CORS_ALLOWED_ORIGINS=*
+      - EXTRA_CORS_ALLOWED_HEADERS=*
+      - EXTRA_CORS_ALLOWED_METHODS=GET,POST,PUT,DELETE,HEAD,OPTIONS
+      - DYNAMODB_SHARE_DB=1
+      - KINESIS_PROVIDER=kinesalite
+      - KMS_PROVIDER=local
+    volumes:
+      - "${TMPDIR:-/tmp}/localstack:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - ./localstack:/etc/localstack/init/ready.d
+    networks:
+      - local-api-net
+
+  go-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - localstack
+    environment:
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - LOCALSTACK_ENDPOINT=http://localstack:4566
+    networks:
+      - local-api-net
+
+  localstack-web:
+    build:
+      context: ./.setup/localstack-web
+      dockerfile: Dockerfile
+      args:
+        VITE_LOCALSTACK_ENDPOINT: http://localhost:4566
+        VITE_AWS_DEFAULT_REGION: ${AWS_REGION:-us-east-1}
+        VITE_AWS_ACCESS_KEY_ID: test
+        VITE_AWS_SECRET_ACCESS_KEY: test
+    ports:
+      - "8081:80"
+    depends_on:
+      - localstack
+    networks:
+      - local-api-net
+
+networks:
+  local-api-net:
+    driver: bridge

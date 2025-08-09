@@ -1,0 +1,12 @@
+{
+  "name": "go-api-template",
+  "private": true,
+  "devDependencies": {
+    "serverless": "^3.38.0",
+    "serverless-localstack": "^1.2.0"
+  },
+  "scripts": {
+    "sls:deploy": "serverless deploy",
+    "sls:remove": "serverless remove"
+  }
+}

@@ -1,0 +1,16 @@
+# Binaries
+/bin/
+/bin
+/bin/*
+/bin/**
+/bin
+bin/
+*.zip
+
+# Local
+.env
+.localstack
+
+# Node artefacts (localstack-web)
+**/node_modules
+**/dist

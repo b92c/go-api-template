@@ -1,0 +1,38 @@
+service: go-api-template
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: provided.al2
+  architecture: x86_64
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+  environment:
+    AWS_REGION: ${self:provider.region}
+
+package:
+  individually: true
+
+functions:
+  health:
+    handler: bootstrap
+    package:
+      artifact: .serverless/health.zip
+    events:
+      - httpApi:
+          path: /health
+          method: get
+
+plugins:
+  - serverless-localstack
+
+custom:
+  localstack:
+    stages:
+      - dev
+    host: localhost
+    edgePort: 4566
+    autostart: false
+    lambda:
+      mountCode: false
