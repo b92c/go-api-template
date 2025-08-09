@@ -95,17 +95,26 @@ lambda.Start(handler.LambdaHandler) // o handler cria o logger e injeta no caso 
 docker compose up -d --build
 ```
 
-2. UI do LocalStack Web:
+1. UI do LocalStack Web:
 
 - <http://localhost:8081>
 
-3. Healthcheck:
+### Exemplos de Interface (LocalStack UI)
+
+- Dashboard
+Modo Light
+![LocalStack UI - Light](.setup/docs/localstack-ui.png)
+
+Modo Dark
+![LocalStack UI - Dark](.setup/docs/localstack-ui-dark.png)
+
+1. Healthcheck:
 
 ```bash
 curl http://localhost:8080/health
 ```
 
-4. CRUD de exemplo (/items)
+1. CRUD de exemplo (/items)
 
 - Crie a tabela no LocalStack (DynamoDB):
   - Nome: `example-items`
@@ -185,4 +194,5 @@ REGION=us-east-1 make sls-remove
 - EXAMPLE_TABLE: nome da tabela para o CRUD (default: example-items)
 
 ## Licença
+
 MIT
