@@ -101,11 +101,12 @@ docker compose up -d --build
 
 ### Exemplos de Interface (LocalStack UI)
 
-- Dashboard
-Modo Light
+- #### Dashboard
+
+   Modo **Light**
 ![LocalStack UI - Light](.setup/docs/localstack-ui.png)
 
-Modo Dark
+   Modo **Dark**
 ![LocalStack UI - Dark](.setup/docs/localstack-ui-dark.png)
 
 1. Healthcheck:
