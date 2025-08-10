@@ -47,8 +47,6 @@ Template de API em Go com arquitetura limpa, pronto para:
 ├── serverless.yml
 ├── events/
 │   └── health-event.json
-├── scripts/
-│   └── deploy.sh
 ├── go.mod / go.sum
 └── README.md
 ```
@@ -153,6 +151,62 @@ curl -s -X PUT http://localhost:8080/items/1 \
 
 ```bash
 curl -s -X DELETE http://localhost:8080/items/1 -i
+```
+
+## Stack de exemplo (bootstrap LocalStack)
+
+Ao subir o Docker (docker compose up -d --build), o LocalStack executa o script `localstack/01-bootstrap.sh` automaticamente (init/ready.d) e cria recursos para desenvolvimento:
+
+- S3: bucket `s3://go-api-template-bucket`
+- DynamoDB: tabela `example-items (PK: id String)`
+- Lambda: função `health` (Go, runtime provided.al2)
+- SNS: tópico `example-topic`
+- SQS: fila `example-queue` assinada no tópico SNS
+
+### Exemplos rápidos (awslocal)
+
+- Verificar recursos criados:
+
+```bash
+awslocal s3 ls
+awslocal dynamodb list-tables
+awslocal lambda list-functions
+awslocal sns list-topics
+awslocal sqs list-queues
+```
+
+- Invocar a Lambda de exemplo:
+
+```bash
+awslocal lambda invoke \
+  --function-name health \
+  --payload '{"rawPath":"/health","requestContext":{"http":{"method":"GET","path":"/health"}}}' \
+  /tmp/out.json >/dev/null && cat /tmp/out.json; echo
+```
+
+- Publicar no SNS e ler da SQS:
+
+```bash
+TOPIC_ARN=$(awslocal sns list-topics --query 'Topics[0].TopicArn' --output text)
+awslocal sns publish --topic-arn "$TOPIC_ARN" --message 'hello from sns'
+QUEUE_URL=$(awslocal sqs get-queue-url --queue-name example-queue --query QueueUrl --output text)
+awslocal sqs receive-message --queue-url "$QUEUE_URL" --wait-time-seconds 1
+```
+
+- S3: enviar e listar arquivo:
+
+```bash
+awslocal s3 cp README.md s3://go-api-template-bucket/README.md
+awslocal s3 ls s3://go-api-template-bucket
+```
+
+- DynamoDB: inserir e listar itens:
+
+```bash
+awslocal dynamodb put-item \
+  --table-name example-items \
+  --item '{"id":{"S":"test-1"},"name":{"S":"foo"}}'
+awslocal dynamodb scan --table-name example-items
 ```
 
 ## Testes
