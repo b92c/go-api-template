@@ -1,9 +1,0 @@
-{
-  "httpMethod": "POST",
-  "path": "/api/resource",
-  "headers": {
-    "Content-Type": "application/json"
-  },
-  "body": "{\"key1\":\"value1\", \"key2\":\"value2\"}",
-  "isBase64Encoded": false
-}
