@@ -1,6 +1,6 @@
-# Go API Template (Go + AWS Lambda + LocalStack Web + Serverless)
+# Go Boilerplate (Go + AWS Lambda + LocalStack Web + Serverless)
 
-Template de API em Go com arquitetura limpa, pronto para:
+Boilerplate em Go com arquitetura limpa, pronto para:
 
 - Desenvolvimento local com Docker Engine (docker compose)
 - Simulação de AWS via LocalStack + LocalStack UI
